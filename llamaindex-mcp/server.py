@@ -1,22 +1,26 @@
-import sqlite3
 import argparse
+import sqlite3
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP('sqlite-demo')
+
 
 def init_db():
     conn = sqlite3.connect('demo.db')
     cursor = conn.cursor()
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS people (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            age INTEGER NOT NULL,
-            profession TEXT NOT NULL
-        )
-    ''')
+                   CREATE TABLE IF NOT EXISTS people
+                   (
+                       id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                       name       TEXT    NOT NULL,
+                       age        INTEGER NOT NULL,
+                       profession TEXT    NOT NULL
+                   )
+                   ''')
     conn.commit()
     return conn, cursor
+
 
 @mcp.tool()
 def add_data(query: str) -> bool:
@@ -44,6 +48,7 @@ def add_data(query: str) -> bool:
         >>> add_data(query)
         True
     """
+    print(f"Executing query: {query}")
     conn, cursor = init_db()
     try:
         cursor.execute(query)
@@ -54,6 +59,7 @@ def add_data(query: str) -> bool:
         return False
     finally:
         conn.close()
+
 
 @mcp.tool()
 def read_data(query: str = "SELECT * FROM people") -> list:
@@ -79,6 +85,7 @@ def read_data(query: str = "SELECT * FROM people") -> list:
         >>> read_data("SELECT name, profession FROM people WHERE age < 30")
         [('Alice Smith', 'Developer')]
     """
+    print(f"Executing query: {query}")
     conn, cursor = init_db()
     try:
         cursor.execute(query)
@@ -88,7 +95,6 @@ def read_data(query: str = "SELECT * FROM people") -> list:
         return []
     finally:
         conn.close()
-
 
 
 if __name__ == "__main__":
@@ -109,8 +115,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     mcp.run(args.server_type)
 
-
-
 # # Example usage
 # if __name__ == "__main__":
 #     # Example INSERT query
@@ -118,11 +122,11 @@ if __name__ == "__main__":
 #     INSERT INTO people (name, age, profession)
 #     VALUES ('John Doe', 30, 'Engineer')
 #     """
-    
+
 #     # Add data
 #     if add_data(insert_query):
 #         print("Data added successfully")
-    
+
 #     # Read all data
 #     results = read_data()
 #     print("\nAll records:")
