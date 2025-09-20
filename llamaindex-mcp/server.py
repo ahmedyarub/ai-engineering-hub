@@ -109,26 +109,26 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--server_type", type=str, default="sse", choices=["sse", "stdio"]
+        "--server_type", type=str, default="streamable-http", choices=["streamable-http", "sse", "stdio"]
     )
 
     args = parser.parse_args()
-    mcp.run(args.server_type)
+    mcp.run(transport=args.server_type, mount_path="/mcp")
 
-# # Example usage
-# if __name__ == "__main__":
-#     # Example INSERT query
-#     insert_query = """
-#     INSERT INTO people (name, age, profession)
-#     VALUES ('John Doe', 30, 'Engineer')
-#     """
+    # # Example usage
+    # if __name__ == "__main__":
+    #     # Example INSERT query
+    #     insert_query = """
+    #     INSERT INTO people (name, age, profession)
+    #     VALUES ('John Doe', 30, 'Engineer')
+    #     """
 
-#     # Add data
-#     if add_data(insert_query):
-#         print("Data added successfully")
+    #     # Add data
+    #     if add_data(insert_query):
+    #         print("Data added successfully")
 
-#     # Read all data
-#     results = read_data()
-#     print("\nAll records:")
-#     for record in results:
-#         print(record)
+    #     # Read all data
+    #     results = read_data()
+    #     print("\nAll records:")
+    #     for record in results:
+    #         print(record)
