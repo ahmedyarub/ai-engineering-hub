@@ -4,9 +4,9 @@ from rag_code import *
 
 # Create an MCP server
 mcp = FastMCP("MCP-RAG-app",
-              host="127.0.0.1",
-              port=8080,
-              timeout=30)
+              host="0.0.0.0",
+              port=8000)
+
 
 @mcp.tool()
 def machine_learning_faq_retrieval_tool(query: str) -> str:
@@ -23,7 +23,7 @@ def machine_learning_faq_retrieval_tool(query: str) -> str:
     # check type of text
     if not isinstance(query, str):
         raise ValueError("query must be a string")
-    
+
     retriever = Retriever(QdrantVDB("ml_faq_collection"), EmbedData())
     response = retriever.search(query)
 
@@ -46,7 +46,7 @@ def bright_data_web_search_tool(query: str) -> list[str]:
     # check type of text
     if not isinstance(query, str):
         raise ValueError("query must be a string")
-    
+
     import os
     import ssl
     import requests
@@ -59,12 +59,13 @@ def bright_data_web_search_tool(query: str) -> list[str]:
     # Bright Data configuration
     host = 'brd.superproxy.io'
     port = 33335
-    
+
     # get username and password from brightdata.com
     username = os.getenv("BRIGHT_DATA_USERNAME")
     password = os.getenv("BRIGHT_DATA_PASSWORD")
 
     proxy_url = f'http://{username}:{password}@{host}:{port}'
+    print("Proxy URL: " + proxy_url)
     proxies = {
         'http': proxy_url,
         'https': proxy_url
@@ -76,9 +77,9 @@ def bright_data_web_search_tool(query: str) -> list[str]:
     response = requests.get(url, proxies=proxies, verify=False)
 
     # Return organic search results
-    return response.json()['organic']
+    return [item['description'] for item in response.json()['organic']]
+
 
 if __name__ == "__main__":
-    print("Starting MCP server at http://127.0.0.1:8080 on port 8080")
-    mcp.run()
-
+    print("Starting MCP server at http://0.0.0.0:8000 on port 8000")
+    mcp.run(transport="streamable-http", mount_path="/mcp")
